@@ -6,15 +6,16 @@ class BlogPostsController < ApplicationController
 
     before_action :set_blog_post, except: [:index, :new, :create] #only: [:show, :edit, :update, :destroy]
     def index
-        @blog_post = BlogPost.all
+        @blog_post = user_signed_in? ? BlogPost.sorted : BlogPost.published.sorted
     end
+
     def show
        # @blog_post = BlogPost.find(params[:id]) #The show method's @book = Book.find(params[:id]) line tells Rails to find only the bolgpost that has the id defined in params[:id].
                                                 #The params object is a container that enables you to pass values between method calls.
                                             
                                             
-        rescue ActiveRecord::RecordNotFound
-        redirect_to root_path  #if the record is not found, redirect to the root path which is index now
+       rescue ActiveRecord::RecordNotFound
+       redirect_to root_path  #if the record is not found, redirect to the root path which is index now
     end
     def new
         @blog_post = BlogPost.new
@@ -47,11 +48,15 @@ class BlogPostsController < ApplicationController
 
     private
     def blog_post_params
-        params.require(:blog_post).permit(:title, :body)
+        params.require(:blog_post).permit(:title, :body, :published_at)
     end
 
     def set_blog_post
-        @blog_post = BlogPost.find(params[:id])
+        if user_signed_in?
+            @blog_post = BlogPost.find(params[:id])
+        else
+        @blog_post = BlogPost.published_at.find(params[:id])
+        end
     end
     
 end
