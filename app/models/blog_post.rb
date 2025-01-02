@@ -11,7 +11,7 @@ class BlogPost < ApplicationRecord
     published_at.nil?
    end
    def published?
-    publiched_at? && published_at <= Time.current
+    published_at? && published_at <= Time.current
    end
    def scheduled?
     published_at? && published_at > Time.current
